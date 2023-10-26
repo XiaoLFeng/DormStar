@@ -1,0 +1,19 @@
+server:
+  port: 8080
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+spring:
+  datasource:
+    url: jdbc:mysql://192.168.5.190:3306/
+    username: dormstar
+    password: 114477225588
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  mail:
+    host: smtp.qiye.aliyun.com
+    port: 25
+    username: frontleaves@x-lf.cn
+    password: Front061823
+project:
+  version: v1.0.0
+  name: 201京海市保护伞
