@@ -3,6 +3,9 @@ package com.xiaolfeng.dormstar.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xiaolfeng.dormstar.entities.DrcomEntity;
 import com.xiaolfeng.dormstar.entities.DrcomLoginEntity;
+import com.xiaolfeng.dormstar.entities.UserEntity;
+import com.xiaolfeng.dormstar.mapper.UserMapper;
+import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalTime;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,21 +23,25 @@ import java.util.regex.Pattern;
  * @version v1.0.0
  */
 @Component
+@RequiredArgsConstructor
 public class DayScheduleService {
-    private final Request login;
-    private final Request loginBody;
-
-    public DayScheduleService() {
-        login = new Request.Builder()
-                .url("http://10.1.99.100:801/eportal/portal/login?callback=dr1003&login_method=1&user_account=,0,22344233@cmcc&user_password=061823zcw&jsVersion=4.1.3&terminal_type=1&lang=zh-cn&v=8101&lang=zh")
-                .build();
-        loginBody = new Request.Builder()
-                .url("http://10.1.99.100/drcom/chkstatus?callback=dr1002&jsVersion=4.X&v=1117&lang=zh")
-                .build();
-    }
+    private final UserMapper userMapper;
+    private Request login;
+    private Request loginBody;
 
     @Scheduled(cron = "0 0 7 * * ?")
     public void morningAutoLogin() {
+        UserEntity[] userEntities = userMapper.getAllUser();
+        Random random = new Random();
+        int getLong = random.nextInt(userEntities.length);
+        this.login = new Request.Builder()
+                .url("http://10.1.99.100:801/eportal/portal/login?callback=dr1003&login_method=1&user_account=,0," + userEntities[getLong].getUid() + "@" + userEntities[getLong].getType() + "&user_password=" + userEntities[getLong].getPassword() + "&jsVersion=4.1.3&terminal_type=1&lang=zh-cn&v=8101&lang=zh")
+                .build();
+        this.loginBody = new Request.Builder()
+                .url("http://10.1.99.100/drcom/chkstatus?callback=dr1002&jsVersion=4.X&v=1117&lang=zh")
+                .build();
+
+        // Start
         OkHttpClient client = new OkHttpClient();
         // 检查是否可以访问内网
         try (Response ignored = client.newCall(loginBody).execute()) {
@@ -60,6 +68,17 @@ public class DayScheduleService {
 
     @Scheduled(fixedDelay = 60000)
     public void executePeriodicTask() {
+        UserEntity[] userEntities = userMapper.getAllUser();
+        Random random = new Random();
+        int getLong = random.nextInt(userEntities.length);
+        this.login = new Request.Builder()
+                .url("http://10.1.99.100:801/eportal/portal/login?callback=dr1003&login_method=1&user_account=,0," + userEntities[getLong].getUid() + "@" + userEntities[getLong].getType() + "&user_password=" + userEntities[getLong].getPassword() + "&jsVersion=4.1.3&terminal_type=1&lang=zh-cn&v=8101&lang=zh")
+                .build();
+        this.loginBody = new Request.Builder()
+                .url("http://10.1.99.100/drcom/chkstatus?callback=dr1002&jsVersion=4.X&v=1117&lang=zh")
+                .build();
+
+        // Start
         LocalTime localTime = LocalTime.now();
         if (localTime.isAfter(LocalTime.of(7, 0)) && localTime.isBefore(LocalTime.of(23, 0))) {
             OkHttpClient client = new OkHttpClient();
@@ -101,6 +120,17 @@ public class DayScheduleService {
     @Scheduled(cron = "0 0 23 * * 0-4")
     @Scheduled(cron = "0 30 23 * * 5-6")
     public void theDayChangeNetwork() {
+        UserEntity[] userEntities = userMapper.getAllUser();
+        Random random = new Random();
+        int getLong = random.nextInt(userEntities.length);
+        this.login = new Request.Builder()
+                .url("http://10.1.99.100:801/eportal/portal/login?callback=dr1003&login_method=1&user_account=,0," + userEntities[getLong].getUid() + "@" + userEntities[getLong].getType() + "&user_password=" + userEntities[getLong].getPassword() + "&jsVersion=4.1.3&terminal_type=1&lang=zh-cn&v=8101&lang=zh")
+                .build();
+        this.loginBody = new Request.Builder()
+                .url("http://10.1.99.100/drcom/chkstatus?callback=dr1002&jsVersion=4.X&v=1117&lang=zh")
+                .build();
+
+        // Start
         OkHttpClient client = new OkHttpClient();
         // 获取当前登录信息
         try (Response response = client.newCall(loginBody).execute()) {
