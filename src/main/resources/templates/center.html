@@ -25,7 +25,7 @@
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <img alt="Your Company" class="h-8 w-8"
-                             src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500">
+                             src="">
                     </div>
                     <div class="ml-10 flex space-x-4 w-full">
                         <a aria-current="page" class="bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium"
@@ -40,7 +40,7 @@
                         <span class="sr-only">Open user menu</span>
                         <img alt=""
                              class="h-8 w-8 rounded-full"
-                             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80">
+                             src="">
                     </div>
                 </div>
             </div>
@@ -52,16 +52,21 @@
         </div>
     </header>
     <main>
-        <div class="mx-auto max-w-7xl py-6 px-6 lg:px-8 grid grid-cols-5">
-            <div class="grid-cols-1">
-                <a class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
-                   href="#">
-                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy
-                        technology
-                        acquisitions 2021</h5>
-                    <p class="font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology
-                        acquisitions of 2021 so far, in reverse chronological order.</p>
-                </a>
+        <div class="mx-auto max-w-7xl py-6 px-6 lg:px-8 grid grid-cols-5 gap-4">
+            <div class="col-span-2">
+                <div class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">宿舍网络状态</h5>
+                    <div>获取IP地址：<span class="font-bold" th:text="${getIpv4}"></span></div>
+                    <div>是否登录：<span class="font-bold" th:text="${getLogin}"></span></div>
+                    <div>登陆账号：<span class="font-bold" th:text="${getStudentNumber}"></span></div>
+                    <div>节点信息：<span class="font-bold" th:text="${getServiceProvider}"></span></div>
+                </div>
+            </div>
+            <div class="col-span-3">
+                <div class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">登录日志</h5>
+
+                </div>
             </div>
         </div>
     </main>
