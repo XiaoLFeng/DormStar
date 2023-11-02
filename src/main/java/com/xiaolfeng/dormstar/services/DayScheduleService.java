@@ -13,7 +13,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,13 +59,13 @@ public class DayScheduleService {
                     }
                     ObjectMapper objectMapper = new ObjectMapper();
                     DrcomLoginEntity drocm = objectMapper.readValue(data, DrcomLoginEntity.class);
-                    System.out.println("[INFO] " + drocm.getMessage());
+                    System.out.println(new Date().getTime() + " [INFO] " + drocm.getMessage());
                 }
             } catch (IOException ignoredSecond) {
-                System.out.println("[WARNING] 无法登录");
+                System.out.println(new SimpleDateFormat().format("yyyy-mm-dd HH:ii:ss") + " [WARNING] be unable to log in");
             }
         } catch (IOException ignoredFirst) {
-            System.out.println("[WARNING] 不处于校园网内，请手动管理网络");
+            System.out.println(new SimpleDateFormat().format("yyyy-mm-dd HH:ii:ss") + " [WARNING] Not in the campus network, please manually manage the network");
         }
     }
 
@@ -71,60 +74,72 @@ public class DayScheduleService {
         UserEntity[] userEntities = userMapper.getAllUser();
         Random random = new Random();
         int getLong = random.nextInt(userEntities.length);
-        this.login = new Request.Builder()
-                .url("http://10.1.99.100:801/eportal/portal/login?callback=dr1003&login_method=1&user_account=,0," + userEntities[getLong].getUid() + "@" + userEntities[getLong].getType() + "&user_password=" + userEntities[getLong].getPassword() + "&jsVersion=4.1.3&terminal_type=1&lang=zh-cn&v=8101&lang=zh")
-                .build();
+        LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
+        if (localTime.isAfter(LocalTime.of(7, 0, 0)) && localTime.isBefore(LocalTime.of(23, 59, 59))) {
+            this.login = new Request.Builder()
+                    .url("http://10.1.99.100:801/eportal/portal/login?callback=dr1003&login_method=1&user_account=,0," + userEntities[getLong].getUid() + "@" + userEntities[getLong].getType() + "&user_password=" + userEntities[getLong].getPassword() + "&jsVersion=4.1.3&terminal_type=1&lang=zh-cn&v=8101&lang=zh")
+                    .build();
+        }
         this.loginBody = new Request.Builder()
                 .url("http://10.1.99.100/drcom/chkstatus?callback=dr1002&jsVersion=4.X&v=1117&lang=zh")
                 .build();
 
         // Start
-        LocalTime localTime = LocalTime.now();
-        if (localTime.isAfter(LocalTime.of(7, 0)) && localTime.isBefore(LocalTime.of(23, 0))) {
-            OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder()
-                    .url("https://suggestion.baidu.com/su?wd=201%E4%BA%AC%E6%B5%B7%E5%B8%82%E5%AE%BF%E8%88%8D")
-                    .build();
+        if (localTime.isAfter(LocalTime.of(7, 0, 0))) {
+            if (localTime.isBefore(LocalTime.of(23, 59, 59))) {
+                OkHttpClient client = new OkHttpClient();
+                Request request = new Request.Builder()
+                        .url("https://suggestion.baidu.com/su?wd=201%E4%BA%AC%E6%B5%B7%E5%B8%82%E5%AE%BF%E8%88%8D")
+                        .build();
 
-            try (Response response = client.newCall(request).execute()) {
-                // 检查是否可以获取外网内容
-                if (response.body() != null) {
-                    System.out.println("[INFO] 已登录");
-                }
-            } catch (IOException ignoreFirst) {
-                // 检查是否可以访问内网
-                try (Response ignored = client.newCall(loginBody).execute()) {
-                    // 处理登录
-                    try (Response responseLogin = client.newCall(login).execute()) {
-                        if (responseLogin.body() != null) {
-                            String getData = responseLogin.body().string();
-                            Matcher matcher = Pattern.compile("dr1003\\(([^)]+)\\)").matcher(getData);
-                            String data = null;
-                            if (matcher.find()) {
-                                data = matcher.group(1);
-                            }
-                            ObjectMapper objectMapper = new ObjectMapper();
-                            DrcomLoginEntity drocm = objectMapper.readValue(data, DrcomLoginEntity.class);
-                            System.out.println("[INFO] " + drocm.getMessage());
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                try (Response response = client.newCall(request).execute()) {
+                    // 检查是否可以获取外网内容
+                    if (response.body() != null) {
+                        System.out.println(new Date().getTime() + " [INFO] already logged in");
                     }
-                } catch (IOException ignoreSecond) {
-                    System.out.println("[WARNING] 不处于校园网内，请手动管理网络");
+                } catch (IOException ignoreFirst) {
+                    // 检查是否可以访问内网
+                    try (Response ignored = client.newCall(loginBody).execute()) {
+                        // 处理登录
+                        try (Response responseLogin = client.newCall(login).execute()) {
+                            if (responseLogin.body() != null) {
+                                String getData = responseLogin.body().string();
+                                Matcher matcher = Pattern.compile("dr1003\\(([^)]+)\\)").matcher(getData);
+                                String data = null;
+                                if (matcher.find()) {
+                                    data = matcher.group(1);
+                                }
+                                ObjectMapper objectMapper = new ObjectMapper();
+                                DrcomLoginEntity drocm = objectMapper.readValue(data, DrcomLoginEntity.class);
+                                System.out.println(new Date().getTime() + " [INFO] " + drocm.getMessage());
+                            }
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } catch (IOException ignoreSecond) {
+                        System.out.println(new Date().getTime() + " [WARNING] Not in the campus network, please manually manage the network");
+                    }
                 }
             }
         }
     }
 
     @Scheduled(cron = "0 0 23 * * 0-4")
+    public void theWorkDay() {
+        this.theDayChangeNetwork();
+    }
+
     @Scheduled(cron = "0 30 23 * * 5-6")
+    public void theWeekendDay() {
+        this.theDayChangeNetwork();
+    }
+
     public void theDayChangeNetwork() {
         UserEntity[] userEntities = userMapper.getAllUser();
         Random random = new Random();
         int getLong = random.nextInt(userEntities.length);
         this.login = new Request.Builder()
-                .url("http://10.1.99.100:801/eportal/portal/login?callback=dr1003&login_method=1&user_account=,0," + userEntities[getLong].getUid() + "@" + userEntities[getLong].getType() + "&user_password=" + userEntities[getLong].getPassword() + "&jsVersion=4.1.3&terminal_type=1&lang=zh-cn&v=8101&lang=zh")
+                .url("http://10.1.99.100:801/eportal/portal/login?callback=dr1003&login_method=1&user_account=,0," + userEntities[getLong].getUid() + "&user_password=061823zcw&jsVersion=4.1.3&terminal_type=1&lang=zh-cn&v=6795&lang=zh")
                 .build();
         this.loginBody = new Request.Builder()
                 .url("http://10.1.99.100/drcom/chkstatus?callback=dr1002&jsVersion=4.X&v=1117&lang=zh")
@@ -153,10 +168,7 @@ public class DayScheduleService {
                 try (Response responseRemoveLogin = client.newCall(removeLogin).execute()) {
                     if (responseRemoveLogin.body() != null) {
                         // 处理无锡学院登录
-                        Request loginDefault = new Request.Builder()
-                                .url("http://10.1.99.100:801/eportal/portal/login?callback=dr1003&login_method=1&user_account=,0,22344233&user_password=061823zcw&jsVersion=4.1.3&terminal_type=1&lang=zh-cn&v=6795&lang=zh")
-                                .build();
-                        try (Response responseDefault = client.newCall(loginDefault).execute()) {
+                        try (Response responseDefault = client.newCall(login).execute()) {
                             if (responseDefault.body() != null) {
                                 String getDataDefault = responseDefault.body().string();
                                 Matcher matcherDefault = Pattern.compile("dr1003\\(([^)]+)\\)").matcher(getDataDefault);
@@ -166,22 +178,22 @@ public class DayScheduleService {
                                 }
                                 ObjectMapper objectMapper = new ObjectMapper();
                                 DrcomLoginEntity drocm = objectMapper.readValue(dataDefault, DrcomLoginEntity.class);
-                                System.out.println("[INFO] " + drocm.getMessage());
+                                System.out.println(new Date().getTime() + "[INFO] " + drocm.getMessage());
                             }
                         } catch (IOException ignored) {
-                            System.out.println("[WARNING] 不处于校园网内，请手动管理网络");
+                            System.out.println(new SimpleDateFormat().format("yyyy-mm-dd HH:ii:ss") + " [WARNING] Not in the campus network, please manually manage the network");
                         }
                     } else {
-                        System.out.println("[ERROR] 对象服务器异常");
+                        System.out.println("[ERROR] Object server exception");
                     }
                 } catch (IOException ignored) {
-                    System.out.println("[WARNING] 不处于校园网内，请手动管理网络");
+                    System.out.println(new SimpleDateFormat().format("yyyy-mm-dd HH:ii:ss") + " [WARNING] Not in the campus network, please manually manage the network");
                 }
             } else {
-                System.out.println("[ERROR] 对象服务器异常");
+                System.out.println("[ERROR] Object server exception");
             }
         } catch (IOException ignored) {
-            System.out.println("[WARNING] 不处于校园网内，请手动管理网络");
+            System.out.println(new SimpleDateFormat().format("yyyy-mm-dd HH:ii:ss") + " [WARNING] Not in the campus network, please manually manage the network");
         }
     }
 }

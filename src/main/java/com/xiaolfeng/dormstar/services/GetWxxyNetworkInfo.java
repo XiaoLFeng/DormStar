@@ -5,7 +5,6 @@ import com.xiaolfeng.dormstar.entities.DrcomEntity;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.apache.ibatis.jdbc.Null;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -21,9 +20,7 @@ public class GetWxxyNetworkInfo {
 
     public void getWxxyNetWork(Model model) {
         OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url("http://10.1.99.100/drcom/chkstatus?callback=dr1002&jsVersion=4.X&v=1117&lang=zh")
-                .build();
+        Request request = new Request.Builder().url("http://10.1.99.100/drcom/chkstatus?callback=dr1002&jsVersion=4.X&v=1117&lang=zh").build();
 
         try (Response response = client.newCall(request).execute()) {
             if (response.body() != null) {
@@ -55,10 +52,10 @@ public class GetWxxyNetworkInfo {
                             model.addAttribute("getServiceProvider", "无锡学院");
                         }
                     } else {
-                        model.addAttribute("getServiceProvider", "未知");
+                        model.addAttribute("getServiceProvider", "无锡学院");
                     }
                     model.addAttribute("getLogin", "已登录");
-                } else  {
+                } else {
                     model.addAttribute("getLogin", "未登录");
                     System.out.println("未登录");
                 }
