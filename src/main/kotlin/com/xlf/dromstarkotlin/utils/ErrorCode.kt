@@ -66,6 +66,12 @@ enum class ErrorCode(val output: String, val code: Int, val message: String, val
         "无法生成验证密钥（VerifyKey）",
         HttpStatus.BAD_REQUEST
     ),
+    YOU_ARE_ALREADY_LOGIN(
+        "YouAreAlreadyLogin",
+        40026,
+        "您已经登录",
+        HttpStatus.BAD_REQUEST
+    ),
     YOU_ARE_NOT_LOGIN(
         "YouAreNotLogin",
         40110,
@@ -118,6 +124,12 @@ enum class ErrorCode(val output: String, val code: Int, val message: String, val
         "NotApikey",
         40317,
         "apikey不正确",
+        HttpStatus.FORBIDDEN
+    ),
+    TIMESTAMP_EXPIRED(
+        "TimestampExpired",
+        40318,
+        "时间戳过期",
         HttpStatus.FORBIDDEN
     ),
     METHOD_NOT_ALLOWED(

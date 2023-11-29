@@ -15,7 +15,8 @@ class ResultUtil constructor(val output: String, val code: Int, val message: Str
          *
          * @return BaseResponse
          */
-        fun success(): ResponseEntity<BaseResponse> {
+        fun success(httpServletRequest: HttpServletRequest): ResponseEntity<BaseResponse> {
+            println("${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} [Log] <200>Success | Message:OK | URI:${httpServletRequest.requestURI}")
             return ResponseEntity
                 .status(200)
                 .body(BaseResponse())

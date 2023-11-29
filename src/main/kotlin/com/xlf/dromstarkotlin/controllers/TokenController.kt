@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -23,7 +23,7 @@ class TokenController(
     /**
      * 创建 Token 组件
      */
-    @PostMapping("/create")
+    @GetMapping("/create")
     fun createToken(
         @CookieValue("session") token: String?, httpServletResponse: HttpServletResponse,
         @RequestParam("return") returnLink: String?,
