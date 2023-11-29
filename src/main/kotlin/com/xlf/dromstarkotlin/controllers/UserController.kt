@@ -6,6 +6,7 @@ import com.frontleaves.general.utils.ResultUtil
 import com.xlf.dromstarkotlin.entity.voData.SignInVO
 import com.xlf.dromstarkotlin.entity.voData.SignUpVO
 import com.xlf.dromstarkotlin.exception.BusinessException
+import com.xlf.dromstarkotlin.mapper.InfoMapper
 import com.xlf.dromstarkotlin.services.TokenService
 import com.xlf.dromstarkotlin.services.UserService
 import jakarta.servlet.http.HttpServletRequest
@@ -30,7 +31,8 @@ import java.util.Date
 @RequestMapping("/api/user")
 class UserController(
     private val tokenService: TokenService,
-    private val userService: UserService
+    private val userService: UserService,
+    private val infoMapper: InfoMapper,
 ) {
     /**
      * 用户登录组件
@@ -73,6 +75,10 @@ class UserController(
         @RequestBody signUpVO: SignUpVO?, @CookieValue("session") token: String?, httpServletResponse: HttpServletResponse,
         httpServletRequest: HttpServletRequest
     ): ResponseEntity<BaseResponse> {
+        // 检查是否允许注册
+        if (!infoMapper.getRegister()) {
+            return ResultUtil.error(ErrorCode.REGISTRATION_NOT_ALLOWED, httpServletRequest)
+        }
         // 判断请求体是否为空
         if (signUpVO == null) {
             return ResultUtil.error(ErrorCode.MISSING_REQUEST_BODY, httpServletRequest)

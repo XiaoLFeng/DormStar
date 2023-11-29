@@ -72,6 +72,12 @@ enum class ErrorCode(val output: String, val code: Int, val message: String, val
         "您已经登录",
         HttpStatus.BAD_REQUEST
     ),
+    REGISTRATION_NOT_ALLOWED(
+        "RegistrationNotAllowed",
+        40027,
+        "不允许注册",
+        HttpStatus.BAD_REQUEST
+    ),
     YOU_ARE_NOT_LOGIN(
         "YouAreNotLogin",
         40110,
