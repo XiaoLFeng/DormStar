@@ -8,12 +8,12 @@ import org.apache.ibatis.annotations.Select
 @Mapper
 interface UserMapper {
 
-    @Select("SELECT * FROM dormstar.ds_user WHERE user = #{username}")
+    @Select("SELECT * FROM ds_user WHERE user = #{username}")
     fun getUserByUsername(username: String?): UserDO?
 
-    @Select("SELECT * FROM dormstar.ds_user WHERE user = #{username} OR email = #{email} OR tel = #{phone} LIMIT 1")
+    @Select("SELECT * FROM ds_user WHERE user = #{username} OR email = #{email} OR tel = #{phone} LIMIT 1")
     fun getUser(username: String, email: String, phone: String?): UserDO?
 
-    @Insert("INSERT INTO dormstar.ds_user (user, password, email, tel, created_at) VALUES (#{user}, #{password}, #{email}, #{tel}, #{createdAt})")
+    @Insert("INSERT INTO ds_user (user, password, email, tel, created_at) VALUES (#{user}, #{password}, #{email}, #{tel}, #{createdAt})")
     fun insertUser(user: UserDO): Boolean
 }
