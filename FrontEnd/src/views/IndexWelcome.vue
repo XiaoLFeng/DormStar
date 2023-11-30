@@ -12,7 +12,7 @@
           </defs>
         </svg>
         <div class="mx-auto max-w-md text-center lg:mx-0 lg:flex-auto lg:py-32 lg:text-left">
-          <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Boost your productivity.<br />Start using our app today.</h2>
+          <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">{{ data }}</h2>
           <p class="mt-6 text-lg leading-8 text-gray-300">Ac euismod vel sit maecenas id pellentesque eu sed consectetur. Malesuada adipiscing sagittis vel nulla.</p>
           <div class="mt-10 flex items-center justify-center gap-x-6 lg:justify-start">
             <a href="#" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Get started</a>
@@ -26,3 +26,34 @@
     </div>
   </div>
 </template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      message: 'Hello from Vue!',
+      data: [], // 存储从接口获取的数据
+    };
+  },
+  mounted() {
+    // 在组件挂载后执行获取数据的操作
+    this.getDataFromApi();
+  },
+  methods: {
+    getDataFromApi() {
+      // 使用 Axios 发送 GET 请求获取 JSON 接口数据
+      axios.get('http://localhost:8080/api/account/info')
+          .then(response => {
+            // 成功获取数据后更新组件的数据
+            this.data = response.data;
+          })
+          .catch(error => {
+            // 处理错误
+            console.error('Error fetching data:', error);
+          });
+    },
+  },
+};
+</script>
