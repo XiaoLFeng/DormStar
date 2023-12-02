@@ -23,10 +23,17 @@ class AccountController(
             .also { it.find() }
         val matcherType = Pattern.compile("[a-z]+$").matcher(getMap?.get("uid").toString())
             .also { it.find() }
-        hashMap["ip"] = getMap?.get("v46ip")
-        hashMap["time"] = getMap?.get("time")
-        hashMap["uid"] = matcherUid.group(0)
-        hashMap["type"] = matcherType.group(0)
+        try {
+            hashMap["ip"] = getMap?.get("v46ip")
+            hashMap["time"] = getMap?.get("time")
+            hashMap["uid"] = matcherUid.group(0)
+            hashMap["type"] = matcherType.group(0)
+        } catch (e: IllegalStateException) {
+            hashMap["ip"] = getMap?.get("v46ip")
+            hashMap["time"] = null
+            hashMap["uid"] = matcherUid.group(0)
+            hashMap["type"] = null
+        }
         return ResultUtil.success(hashMap, httpServletRequest)
     }
 }

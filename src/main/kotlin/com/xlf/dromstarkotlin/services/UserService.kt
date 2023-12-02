@@ -81,4 +81,8 @@ class UserService(
             return ResultUtil.error(ErrorCode.USER_EXIST, httpServletRequest)
         }
     }
+
+    fun getUserCurrent(token: String, httpServletRequest: HttpServletRequest): ResponseEntity<BaseResponse> {
+        TODO("Not yet implemented")
+    }
 }

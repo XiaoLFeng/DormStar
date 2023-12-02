@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
 class ViewController {
-    @RequestMapping("/{path:[^.]*}")
+    @RequestMapping("/{path:[^.]*}/")
     fun forward(@PathVariable path: String): String? {
         return "forward:/index.html"
     }

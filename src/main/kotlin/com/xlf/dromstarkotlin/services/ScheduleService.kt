@@ -49,7 +49,7 @@ class ScheduleService(
     /**
      * 登录校园网（5分钟自动检查）
      */
-    @Scheduled(fixedDelay = 300000)
+    @Scheduled(fixedDelay = 60000)
     fun schoolLogin() {
         if (CacheData.autoLogin) {
             val calendar = Calendar.getInstance()
@@ -64,12 +64,13 @@ class ScheduleService(
                         accountService.regularLogin()
                     }
                 } else {
-                    // 切换校园网
-                    do {
-                        accountService.regularLogout()
-                        Thread.sleep(5000)
-                    } while (accountService.getInformation()?.get("uid") == null)
-                    accountService.switchTheCampusNetwork()
+                    if (accountService.getInformation()?.get("type") != null) {
+                        do {
+                            accountService.regularLogout()
+                            Thread.sleep(5000)
+                            accountService.switchTheCampusNetwork()
+                        } while (accountService.getInformation()?.get("uid") == null)
+                    }
                 }
             } else {
                 if (hour in 7 .. 23) {
@@ -80,11 +81,13 @@ class ScheduleService(
                         }
                     } else{
                         // 切换校园网
-                        do {
-                            accountService.regularLogout()
-                            Thread.sleep(5000)
-                        } while (accountService.getInformation()?.get("uid") == null)
-                        accountService.switchTheCampusNetwork()
+                        if (accountService.getInformation()?.get("type") != null) {
+                            do {
+                                accountService.regularLogout()
+                                Thread.sleep(5000)
+                                accountService.switchTheCampusNetwork()
+                            } while (accountService.getInformation()?.get("uid") == null)
+                        }
                     }
                 }
             }

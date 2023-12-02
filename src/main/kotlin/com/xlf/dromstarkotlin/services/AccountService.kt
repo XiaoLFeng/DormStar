@@ -83,7 +83,7 @@ class AccountService(
                 .build()
             try {
                 val response = okHttpClient.newCall(request).execute()
-                val matcher = Pattern.compile("dr1003\\(([^)]+)\\)").matcher(response.body!!.string())
+                val matcher = Pattern.compile("dr1002\\(([^)]+)\\)").matcher(response.body!!.string())
                 matcher.find()
                 val getResponseBody = Gson().fromJson(matcher.group(1), HashMap::class.java)
                 if (getResponseBody["result"] == "1") {

@@ -12,12 +12,8 @@ import com.xlf.dromstarkotlin.services.UserService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.CookieValue
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-import java.util.Date
+import org.springframework.web.bind.annotation.*
+import java.util.*
 
 /**
  * 用户控制器
@@ -39,7 +35,9 @@ class UserController(
      */
     @GetMapping("/sign/in")
     fun signIn(
-        @RequestBody signInVO: SignInVO?, @CookieValue("session") token: String?, httpServletResponse: HttpServletResponse,
+        @RequestBody signInVO: SignInVO?,
+        @CookieValue("session") token: String?,
+        httpServletResponse: HttpServletResponse,
         httpServletRequest: HttpServletRequest
     ): ResponseEntity<BaseResponse> {
         // 判断请求体是否为空
@@ -72,7 +70,9 @@ class UserController(
      */
     @GetMapping("/sign/up")
     fun signUp(
-        @RequestBody signUpVO: SignUpVO?, @CookieValue("session") token: String?, httpServletResponse: HttpServletResponse,
+        @RequestBody signUpVO: SignUpVO?,
+        @CookieValue("session") token: String?,
+        httpServletResponse: HttpServletResponse,
         httpServletRequest: HttpServletRequest
     ): ResponseEntity<BaseResponse> {
         // 检查是否允许注册
@@ -103,4 +103,26 @@ class UserController(
             }
         }
     }
+
+    /**
+     * 获取用户信息组件
+     */
+    fun getUserCurrent(
+        @CookieValue("session") token: String?, httpServletRequest: HttpServletRequest, httpServletResponse: HttpServletResponse
+    ): ResponseEntity<BaseResponse> {
+        return if (token!= null) {
+            // 对 token 进行校验
+            if (!tokenService.tokenVerify(token, httpServletResponse)) {
+                // 校验失败
+                BusinessException().backInfo(ErrorCode.TOKEN_VERIFY_FAILED, httpServletRequest)
+            } else {
+                // 获取当前用户信息
+                userService.getUserCurrent(token, httpServletRequest)
+            }
+        } else {
+            // 跳转至创建 Token 页面
+            ResultUtil.redirect("/api/token/create", httpServletRequest)
+        }
+    }
+
 }
